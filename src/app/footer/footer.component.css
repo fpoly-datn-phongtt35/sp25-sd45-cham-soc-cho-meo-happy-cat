@@ -1,0 +1,13 @@
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 40px;
+    background-color: #fdc307;
+    display: flex;
+    justify-content: flex-start; 
+    align-items: center; 
+    color: black; /* Màu chữ đen */
+    font-size: 14px; /* Tùy chỉnh kích thước chữ nếu cần */
+    padding-left: 10px; /* Thêm khoảng cách từ lề trái nếu cần */
+}
