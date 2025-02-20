@@ -1,0 +1,264 @@
+<!-- Link tới Bootstrap và FontAwesome -->
+
+
+<div class="container p-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2 fw-bold">Khách hàng</h1>
+    <div class="d-flex gap-2">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        Thêm mới
+      </button>
+
+
+    </div>
+  </div>
+
+
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex gap-4">
+    </div>
+  </div>
+
+  <div class="d-flex flex-column justify-content-between bg-white p-4 rounded shadow" style="height: 440px;">
+    <div class="d-flex align-items-center mb-3">
+      <!-- Dropdown để lọc khách hàng -->
+      <select class="form-select me-3 custom-dropdown" style="width: auto; border: 2px solid #28a745; background-color: #d4edda; color: #155724; font-weight: bold;" [(ngModel)]="selectedGender" (change)="onGenderChange()">
+        <option value="">Tất cả</option>
+        <option value="Nam">Nam</option>
+        <option value="Nữ">Nữ</option>
+      </select>
+
+
+      <!-- Ô tìm kiếm và nút tìm kiếm -->
+      <div class="input-group">
+        <input
+          type="text"
+          placeholder="Tìm kiếm "
+          class="form-control"
+          [(ngModel)]="searchTerm"
+          (keyup.enter)="onSearch()"
+          aria-label="Tìm kiếm khách hàng"
+          aria-describedby="button-search"
+        />
+        <button class="btn btn-primary" type="button" id="button-search" (click)="onSearch()">
+          <i class="fas fa-search"></i> Tìm kiếm
+        </button>
+      </div></div>
+      <div *ngIf="alertMessage" [ngClass]="'alert ' + 'alert-' + alertType" class="alert" role="alert" (click)="closeAlert()">
+        <i *ngIf="alertType === 'success'" class="fas fa-check-circle me-2"></i>
+        <i *ngIf="alertType === 'danger'" class="fas fa-exclamation-circle me-2"></i>
+        <span>{{ alertMessage }}</span>
+
+        <!-- Thanh tiến trình (loading bar) -->
+        <div class="alert-progress"></div>
+      </div>
+
+
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Tên khách hàng</th>
+              <th>Email</th>
+              <th>Giới tính</th>
+              <th>Số điện thoại</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let khachHang of khachHangList">
+              <td>{{ khachHang.tenKhachHang }}</td>
+              <td class="email-cell">{{ khachHang.email }}</td>
+              <td>{{ khachHang.gioiTinh }}</td>
+              <td>{{ khachHang.soDienThoai }}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary me-1" type="button" data-bs-toggle="modal" data-bs-target="#detailModal"
+                (click)="setEditKhachHang(khachHang)"><i class="fas fa-eye"></i></button>
+                <button class="btn btn-sm btn-outline-warning me-1" type="button" data-bs-toggle="modal" data-bs-target="#editModal"
+                  (click)="setEditKhachHang(khachHang)">
+                  <i class="fas fa-edit"></i>
+                </button>
+
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteKhachHang(khachHang.khachHangId)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+
+    <div>
+      <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+          <!-- Nút Trở lại -->
+          <li class="page-item" [class.disabled]="currentPage === 0">
+            <a class="page-link" (click)="changePage(currentPage - 1)">Trở lại</a>
+          </li>
+
+          <!-- Các số trang -->
+          <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+              [class.active]="i === currentPage">
+            <a class="page-link" (click)="changePage(i)">{{ i + 1 }}</a>
+          </li>
+
+          <!-- Nút Tiếp -->
+          <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+            <a class="page-link" (click)="changePage(currentPage + 1)">Tiếp</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+<!-- Form Thêm khách hàng -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Thêm mới</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="onSubmit()" novalidate>
+          <div class="mb-3">
+            <label for="tenKhachHang" class="form-label">Tên khách hàng</label>
+            <input type="text" class="form-control" id="tenKhachHang" [(ngModel)]="newKhachHang.tenKhachHang" name="tenKhachHang" required>
+            <div *ngIf="newKhachHangErrors.tenKhachHang" class="text-danger">
+              {{ newKhachHangErrors.tenKhachHang }}
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" [(ngModel)]="newKhachHang.email" name="email" required>
+            <div *ngIf="newKhachHangErrors.email" class="text-danger">
+              {{ newKhachHangErrors.email }}
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="soDienThoai" class="form-label">Số điện thoại</label>
+            <input type="text" class="form-control" id="soDienThoai" [(ngModel)]="newKhachHang.soDienThoai" name="soDienThoai" required>
+            <div *ngIf="newKhachHangErrors.soDienThoai" class="text-danger">
+              {{ newKhachHangErrors.soDienThoai }}
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="gioiTinh" class="form-label">Giới tính</label>
+            <select class="form-select" id="gioiTinh" [(ngModel)]="newKhachHang.gioiTinh" name="gioiTinh" required>
+              <option value="Nam">Nam</option>
+              <option value="Nữ">Nữ</option>
+            </select>
+            <div *ngIf="newKhachHangErrors.gioiTinh" class="text-danger">
+              {{ newKhachHangErrors.gioiTinh }}
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Lưu</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal Sửa Khách Hàng -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="editModalLabel">Sửa khách hàng</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="onUpdate()" novalidate>
+          <div class="mb-3">
+            <label for="editTenKhachHang" class="form-label">Tên khách hàng</label>
+            <input type="text" class="form-control" id="editTenKhachHang"
+              [(ngModel)]="editKhachHang.tenKhachHang" name="editTenKhachHang" required>
+            <div *ngIf="editKhachHangErrors.tenKhachHang" class="text-danger">
+              {{ editKhachHangErrors.tenKhachHang }}
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="editEmail" class="form-label">Email</label>
+            <input type="email" class="form-control" id="editEmail"
+              [(ngModel)]="editKhachHang.email" name="editEmail" required>
+            <div *ngIf="editKhachHangErrors.email" class="text-danger">
+              {{ editKhachHangErrors.email }}
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="editSoDienThoai" class="form-label">Số điện thoại</label>
+            <input type="text" class="form-control" id="editSoDienThoai"
+              [(ngModel)]="editKhachHang.soDienThoai" name="editSoDienThoai" required>
+            <div *ngIf="editKhachHangErrors.soDienThoai" class="text-danger">
+              {{ editKhachHangErrors.soDienThoai }}
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="editGioiTinh" class="form-label">Giới tính</label>
+            <select class="form-select" id="editGioiTinh"
+              [(ngModel)]="editKhachHang.gioiTinh" name="editGioiTinh" required>
+              <option value="Nam">Nam</option>
+              <option value="Nữ">Nữ</option>
+            </select>
+            <div *ngIf="editKhachHangErrors.gioiTinh" class="text-danger">
+              {{ editKhachHangErrors.gioiTinh }}
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+  <!-- Modal xem chi tiết Khách Hàng -->
+
+<div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="editModalLabel">Thông tin khách hàng</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form >
+          <div class="mb-3">
+            <label for="editTenKhachHang" class="form-label">Tên khách hàng</label>
+            <input type="text" class="form-control" id="editTenKhachHang" [(ngModel)]="editKhachHang.tenKhachHang" name="editTenKhachHang" required readonly>
+          </div>
+          <div class="mb-3">
+            <label for="editEmail" class="form-label">Email</label>
+            <input type="email" class="form-control" id="editEmail" [(ngModel)]="editKhachHang.email" name="editEmail" required readonly>
+          </div>
+          <div class="mb-3">
+            <label for="editSoDienThoai" class="form-label">Số điện thoại</label>
+            <input type="text" class="form-control" id="editSoDienThoai" [(ngModel)]="editKhachHang.soDienThoai" name="editSoDienThoai" required readonly>
+          </div>
+          <div class="mb-3">
+            <label for="editGioiTinh" class="form-label">Giới tính</label>
+            <select class="form-select" id="editGioiTinh" [(ngModel)]="editKhachHang.gioiTinh" name="editGioiTinh" required disabled>
+              <option value="Nam">Nam</option>
+              <option value="Nữ">Nữ</option>
+            </select>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-warning" data-bs-dismiss="modal" aria-label="Close" >Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+

@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
+import { HttpClientModule } from '@angular/common/http'; // Thêm dòng này
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TrangchuComponent } from './trangchu/trangchu.component';
@@ -16,12 +16,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 
-
-
 // Import Angular Material Modules
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FooterComponent } from './footer/footer.component';
+import { KhachhangComponent } from './khachhang/khachhang.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +28,8 @@ import { FooterComponent } from './footer/footer.component';
     TrangchuComponent,
     LoginComponent,
     MenuComponent,
-    FooterComponent
+    FooterComponent,
+    KhachhangComponent
   ],
   imports: [
     BrowserModule,
@@ -37,10 +37,12 @@ import { FooterComponent } from './footer/footer.component';
     BrowserAnimationsModule,
     MatIconModule,
     MatListModule,
-    FormsModule,
-    ReactiveFormsModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule
+
 
   ],
   providers: [],
