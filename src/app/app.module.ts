@@ -8,7 +8,6 @@ import { LoginComponent } from './login/login.component';
 import { MenuComponent } from './menu/menu.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 
@@ -21,6 +20,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FooterComponent } from './footer/footer.component';
 import { KhachhangComponent } from './khachhang/khachhang.component';
+import { ViewuserComponent } from './viewuser/viewuser.component';
+import { ViewusergioithieuComponent } from './viewusergioithieu/viewusergioithieu.component';
+import { ViewuserdatlichComponent } from './viewuserdatlich/viewuserdatlich.component';
+import { DatlichComponent } from './datlich/datlich.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +32,11 @@ import { KhachhangComponent } from './khachhang/khachhang.component';
     LoginComponent,
     MenuComponent,
     FooterComponent,
-    KhachhangComponent
+    KhachhangComponent,
+    ViewuserComponent,
+    ViewusergioithieuComponent,
+    ViewuserdatlichComponent,
+    DatlichComponent,
   ],
   imports: [
     BrowserModule,

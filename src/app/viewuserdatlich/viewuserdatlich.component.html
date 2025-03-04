@@ -1,0 +1,95 @@
+<div>
+  <div class="text-center">
+    <i class="fas fa-paw text-warning mx-2"></i>
+    <h1 class="text-warning fw-bold">Đăng ký dịch vụ</h1>
+    <div class="d-flex align-items-center justify-content-center mb-2">
+        <div class="border-top border-warning" style="width: 50px;"></div>
+        <i class="fas fa-paw text-warning mx-2"></i>
+        <div class="border-top border-warning" style="width: 50px;"></div>
+    </div>
+  </div>
+
+  <div class="form-container">
+    <h6 class="text-center">Thông tin của boss và sen</h6>
+
+    <form (ngSubmit)="onSubmit()" #lichDatForm="ngForm">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="tenKhachHang" class="form-label">Tên Khách Hàng</label>
+            <input type="text" id="tenKhachHang" class="form-control" [(ngModel)]="lichDat.tenKhachHang" name="tenKhachHang" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="soDienThoai" class="form-label">Số Điện Thoại</label>
+            <input type="text" id="soDienThoai" class="form-control" [(ngModel)]="lichDat.soDienThoai" name="soDienThoai" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" id="email" class="form-control" [(ngModel)]="lichDat.email" name="email">
+          </div>
+
+          <div class="mb-3">
+            <label for="tenThuCung" class="form-label">Tên Thú Cưng</label>
+            <input type="text" id="tenThuCung" class="form-control" [(ngModel)]="lichDat.tenThuCung" name="tenThuCung" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Chủng Loại</label>
+            <select class="form-select" [(ngModel)]="lichDat.chungLoai" (change)="capNhatDichVuChiTiet()" name="chungLoai" required>
+              <option value="chó">Chó</option>
+              <option value="mèo">Mèo</option>
+            </select>
+          </div>
+
+
+        </div>
+
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="ngayDat" class="form-label">Ngày Đặt</label>
+            <input type="date" id="ngayDat" class="form-control" [(ngModel)]="lichDat.ngayDat" name="ngayDat" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="gioDat" class="form-label">Giờ Đặt</label>
+            <select id="gioDat" class="form-select" [(ngModel)]="lichDat.gioDat" name="gioDat" required>
+              <option *ngFor="let gio of danhSachGio" [value]="gio">{{ gio }}</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="tenDichVu" class="form-label">Dịch Vụ</label>
+            <select class="form-select" [(ngModel)]="lichDat.tenDichVu" (change)="capNhatDichVuChiTiet()" name="tenDichVu"  required>
+              <option *ngFor="let dichVu of danhSachDichVu" [value]="dichVu">{{ dichVu }}</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="hangCan" class="form-label">Cân Nặng (kg)</label>
+            <select class="form-select" [(ngModel)]="lichDat.hangCan" (change)="capNhatDichVuChiTiet()" name="hangCan" required>
+              <option value="1">0-2 kg</option>
+              <option value="2">2-4 kg</option>
+              <option value="3">4-7 kg</option>
+              <option value="4">7-10 kg</option>
+              <option value="5">10-12 kg</option>
+              <option value="6">12-15 kg</option>
+              <option value="7">10-15 kg</option>
+              <option value="8">Trên 15 kg</option>
+
+            </select>
+           </div>
+
+        </div>
+      </div>
+      <div class="row mt-4">
+        <p class="text-center">Số tiền là: {{ tien }} VND</p>
+
+        <div class="col-12 d-flex justify-content-center">
+
+          <button type="submit" class="btn btn-primary w-50" [disabled]="!lichDatForm.form.valid">Đặt Lịch</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
