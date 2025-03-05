@@ -1,12 +1,63 @@
 <header>
-  <nav class="navbar navbar-expand-md navbar-dark ">
+  <nav class="navbar navbar-expand-md navbar-dark">
     <div class="navbar-container">
+
       <a href="https://www.dung123.com" class="navbar-brand">
-        <img src="https://webadmin.beeart.vn/upload/image/20240624/6385482067719231423465794.jpg" alt="Chăm sóc Pet" height="70">
+        <div class="logo" >
+        <img src="../../assets/image/logonew.jpg" alt="Chăm sóc Pet" height="70"></div>
+
       </a>
+      <!-- Hiển thị menu nếu đã đăng nhập -->
+      <div class="navbar-nav">
+        <mat-nav-list class="nav-list">
+          <mat-list-item routerLink="/trang-chu/chuducdung">
+            <mat-icon mat-list-icon>shopping_cart</mat-icon>
+                       <span mat-line>Bán hàng</span>
+          </mat-list-item>
+          <mat-list-item routerLink="/admin/nhan-vien">
+            <mat-icon mat-list-icon>checklist</mat-icon>
+            <span mat-line>Nhân Viên</span>
+          </mat-list-item>
+          <mat-list-item routerLink="/admin/dat-lich">
+            <mat-icon mat-list-icon>event</mat-icon>
+            <span mat-line>Đặt Lịch</span>
+          </mat-list-item>
+          <mat-list-item routerLink="/admin/khach-hang">
+            <mat-icon mat-list-icon>people</mat-icon>
+            <span mat-line>Khách hàng</span>
+          </mat-list-item>
+          <mat-list-item routerLink="/admin/hoa-don">
+            <mat-icon mat-list-icon>receipt_long</mat-icon>
+            <span mat-line>Hóa Đơn</span>
+          </mat-list-item>
+          <mat-list-item routerLink="/admin/dich-vu">
+            <mat-icon mat-list-icon>miscellaneous_services</mat-icon>
+            <span mat-line>Dịch Vụ</span>
+          </mat-list-item>
+          <mat-list-item routerLink="/admin/khuyen-mai">
+            <mat-icon mat-list-icon>local_offer</mat-icon>
+                        <span mat-line>Voucher</span>
+          </mat-list-item>
+          <mat-list-item routerLink="/admin/thu-cung">
+            <mat-icon mat-list-icon>pets</mat-icon>                        <span mat-line>Thú cưng</span>
+          </mat-list-item>
+
+        </mat-nav-list>
+      </div>
+
+      <div class="ml-auto justify-content-end">
+        <mat-nav-list class="nav-list">
+          <mat-list-item  routerLink="/login">
+            <mat-icon mat-list-icon>login</mat-icon>
+            <span mat-line>Login</span>
+          </mat-list-item>
+          <mat-list-item  routerLink="/logout" (click)="logout()">
+            <mat-icon mat-list-icon>logout</mat-icon>
+            <span mat-line>Logout</span>
+          </mat-list-item>
+        </mat-nav-list>
+      </div>
     </div>
-
-
-
   </nav>
 </header>
+<router-outlet></router-outlet>

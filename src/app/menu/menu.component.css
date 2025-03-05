@@ -1,64 +1,80 @@
 /* Màu nền cho navbar */
 nav {
-    background-color: #fdc307;
-    /* Đặt màu nền đen */
-    color: #000000;
-    padding: 10px 20px;
-    
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    
+  background-color: #fdc307;
+  /* Đặt màu nền đen */
+  color: #fdc307;
+  padding: 10px 20px;
+
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
 }
 
 /* Các mục trong navbar */
 .mat-list-item {
-    padding: 10px 15px;
-    cursor: pointer;
-    font-size: 16px;
-    color: #000000;
-    /* Đặt màu chữ sáng cho các mục */
-    transition: background-color 0.3s, color 0.3s;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #000000;
+  /* Đặt màu chữ sáng cho các mục */
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .mat-list-item:hover {
-    background-color: #05fa2e;
-    /* Màu nền tối hơn khi hover */
-    color: #ffc107;
-    /* Màu chữ sáng khi hover */
-    border-radius: 5px;
+  background-color: #05fa2e;
+  /* Màu nền tối hơn khi hover */
+  color: #ffc107;
+  /* Màu chữ sáng khi hover */
+  border-radius: 5px;
 }
 
 /* Logo của navbar */
 .navbar-brand {
-    font-weight: bold;
-    font-size: 1.8rem;
-    color: #000000;
-    /* Màu sáng cho logo */
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-right: 40px;
+  font-weight: bold;
+  font-size: 1.8rem;
+  color: #000000;
+  /* Màu sáng cho logo */
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-right: 40px;
 }
 
 /* Đảm bảo navbar container sử dụng flexbox */
 .navbar-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
 /* Căn chỉnh các mục menu và các mục đăng nhập/đăng xuất */
 .navbar-nav {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .nav-list {
-    display: flex;
-    padding: 0;
-    margin: 0;
+  display: flex;
+  padding: 0;
+  margin: 0;
 }
 
 /* Đảm bảo các mục bên phải được đẩy ra ngoài */
 .ml-auto {
-    margin-left: auto;
+  margin-left: auto;
 }
+.logo {
+  border-radius: 50%; /* Bo tròn hoàn toàn */
+  width: 60px;
+  height: 60px;
+  overflow: hidden; /* Cắt phần ảnh thừa */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo img {
+  width: 100%;  /* Đảm bảo ảnh vừa với div */
+  height: 100%; /* Đảm bảo ảnh vừa với div */
+  object-fit: cover; /* Cắt ảnh cho vừa khung tròn */
+}
+

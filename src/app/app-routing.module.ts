@@ -10,8 +10,17 @@ import {HoadonComponent} from './hoadon/hoadon.component'
 import {DichVuComponent} from './dichvu/dichvu.component';
 import {kmComponent} from './khuyenmai/km.component';
 import {ThucungComponent} from './ThuCung/thucung.component';
+import {MenuComponent} from './menu/menu.component';
+
 
 const routes: Routes = [
+
+
+
+  {
+    path: 'admin',
+    component: MenuComponent,
+    children: [
   { path: 'khach-hang', component: KhachhangComponent },
   { path: 'dat-lich', component: DatlichComponent },
   { path: 'hoa-don', component: HoadonComponent },
@@ -19,7 +28,8 @@ const routes: Routes = [
   { path: 'khuyen-mai', component: kmComponent },
   { path: 'thu-cung', component: ThucungComponent },
 
-
+    ]
+  },
 
   {
     path: '',
