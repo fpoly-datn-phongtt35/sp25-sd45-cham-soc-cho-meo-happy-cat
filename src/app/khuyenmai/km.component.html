@@ -1,0 +1,121 @@
+<div class="container mt-4">
+  <h2 class="text-center">Danh sách khuyến mãi</h2>
+
+  <!-- 🔍 Tìm kiếm & Lọc -->
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <input type="text" class="form-control" [(ngModel)]="searchMakm" placeholder="Nhập mã khuyến mãi">
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary" (click)="searchKhuyenMai()">Tìm kiếm</button>
+    </div>
+    <div class="col-md-3">
+      <input type="date" class="form-control" [(ngModel)]="ngayBatDau">
+    </div>
+    <div class="col-md-3">
+      <input type="date" class="form-control" [(ngModel)]="ngayKetThuc">
+    </div>
+  </div>
+  <button class="btn btn-success mb-3" (click)="filterKhuyenMai()">Lọc</button>
+  <button class="btn btn-info mb-3" (click)="openModal()">Thêm khuyến mãi</button>
+
+  <!-- 📋 Bảng danh sách -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>Mã KM</th>
+          <th>Mô Tả</th>
+          <th>Phần Trăm Giảm</th>
+          <th>Ngày Bắt Đầu</th>
+          <th>Ngày Kết Thúc</th>
+          <th>Điều Kiện</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let km of khuyenMais">
+          <td>{{ km.maKM }}</td>
+          <td>{{ km.moTa }}</td>
+          <td>{{ km.phanTramGiam }}%</td>
+          <td>{{ km.ngayBatDau }}</td>
+          <td>{{ km.ngayKetThuc }}</td>
+          <td>{{ km.dieuKien }}</td>
+          <td>
+            <button class="btn btn-warning btn-sm" (click)="openModal(true, km)">Sửa</button>
+            <button class="btn btn-danger btn-sm" (click)="openDeleteModal(km.makm)">Xóa</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 🟢 PHÂN TRANG -->
+  <nav>
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="currentPage === 0">
+        <button class="page-link" (click)="getKhuyenMai(currentPage - 1)">Trước</button>
+      </li>
+      <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index" [class.active]="i === currentPage">
+        <button class="page-link" (click)="getKhuyenMai(i)">{{ i + 1 }}</button>
+      </li>
+      <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+        <button class="page-link" (click)="getKhuyenMai(currentPage + 1)">Sau</button>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<!-- 🟢 Modal Thêm/Sửa -->
+<div class="modal fade show d-block" *ngIf="isModalOpen">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ isEditing ? 'Sửa khuyến mãi' : 'Thêm khuyến mãi' }}</h5>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label">Mã KM</label>
+        <input class="form-control" [(ngModel)]="khuyenMaiForm.makm" [readonly]="isEditing">
+        
+        <label class="form-label mt-2">Mô Tả</label>
+        <input class="form-control" [(ngModel)]="khuyenMaiForm.moTa">
+        
+        <label class="form-label mt-2">Phần Trăm Giảm</label>
+        <input type="number" class="form-control" [(ngModel)]="khuyenMaiForm.phanTramGiam">
+        
+        <label class="form-label mt-2">Ngày Bắt Đầu</label>
+        <input type="date" class="form-control" [(ngModel)]="khuyenMaiForm.ngayBatDau">
+        
+        <label class="form-label mt-2">Ngày Kết Thúc</label>
+        <input type="date" class="form-control" [(ngModel)]="khuyenMaiForm.ngayKetThuc">
+        
+        <label class="form-label mt-2">Điều Kiện</label>
+        <input class="form-control" [(ngModel)]="khuyenMaiForm.dieuKien">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-success" (click)="saveKhuyenMai()">Lưu</button>
+        <button class="btn btn-secondary" (click)="closeModal()">Hủy</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 🔴 Modal Xóa -->
+<div class="modal fade show d-block" *ngIf="isDeleteModalOpen">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Xác nhận xóa</h5>
+        <button type="button" class="btn-close" (click)="closeDeleteModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p>Bạn có chắc chắn muốn xóa khuyến mãi này không?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger" (click)="deleteKhuyenMai()">Xóa</button>
+        <button class="btn btn-secondary" (click)="closeDeleteModal()">Hủy</button>
+      </div>
+    </div>
+  </div>
+</div>

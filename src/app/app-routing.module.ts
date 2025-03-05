@@ -8,12 +8,16 @@ import {ViewuserdatlichComponent} from './viewuserdatlich/viewuserdatlich.compon
 import {DatlichComponent} from './datlich/datlich.component';
 import {HoadonComponent} from './hoadon/hoadon.component'
 import {DichVuComponent} from './dichvu/dichvu.component';
+import {kmComponent} from './khuyenmai/km.component';
+import {ThucungComponent} from './ThuCung/thucung.component';
 
 const routes: Routes = [
   { path: 'khach-hang', component: KhachhangComponent },
   { path: 'dat-lich', component: DatlichComponent },
   { path: 'hoa-don', component: HoadonComponent },
   { path: 'dich-vu', component: DichVuComponent },
+  { path: 'khuyen-mai', component: kmComponent },
+  { path: 'thu-cung', component: ThucungComponent },
 
 
 

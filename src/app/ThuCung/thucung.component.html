@@ -1,0 +1,123 @@
+<div class="container p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="h2 fw-bold">Thú cưng</h1>
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        Thêm mới
+      </button>
+    </div>
+  
+    <div class="d-flex flex-column bg-white p-4 rounded shadow" style="height: 440px;">
+      <div class="d-flex align-items-center mb-3">
+        <select class="form-select me-3" style="width: auto;" [(ngModel)]="selectedBreed" (change)="onBreedChange()">
+          <option value="">Tất cả</option>
+          <option value="Chó">Chó</option>
+          <option value="Mèo">Mèo</option>
+          <option value="Khác">Khác</option>
+        </select>
+  
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Tìm kiếm" [(ngModel)]="searchTerm" (keyup.enter)="onSearch()">
+          <button class="btn btn-primary" type="button" (click)="onSearch()">
+            <i class="fas fa-search"></i> Tìm kiếm
+          </button>
+        </div>
+      </div>
+  
+      <div *ngIf="alertMessage" class="alert alert-{{ alertType }}" role="alert" (click)="closeAlert()">
+        <span>{{ alertMessage }}</span>
+      </div>
+  
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Tên</th>
+              <th>Loại</th>
+              <th>Giới tính</th>
+              <th>Tuổi</th>
+              <th>Cân nặng</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let thuCung of thucungList">
+              <td>{{ thuCung.tenThuCung }}</td>
+              <td>{{ thuCung.loaiThuCung }}</td>
+              <td>{{ thuCung.gioiTinh }}</td>
+              <td>{{ thuCung.tuoi }}</td>
+              <td>{{ thuCung.canNang }}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailModal"
+                  (click)="setEditThucung(thuCung)">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#editModal"
+                  (click)="setEditThucung(thuCung)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteThucung(thuCung.thuCungId)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  
+      <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="currentPage === 0">
+            <a class="page-link" (click)="changePage(currentPage - 1)">Trở lại</a>
+          </li>
+          <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+            [class.active]="i === currentPage">
+            <a class="page-link" (click)="changePage(i)">{{ i + 1 }}</a>
+          </li>
+          <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+            <a class="page-link" (click)="changePage(currentPage + 1)">Tiếp</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  
+    <!-- Modal Thêm Thú Cưng -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Thêm mới thú cưng</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form (ngSubmit)="onSubmit()">
+              <div class="mb-3">
+                <label class="form-label">Tên thú cưng</label>
+                <input type="text" class="form-control" [(ngModel)]="newThucung.tenThuCung" name="tenThuCung" required>
+                <div *ngIf="newThucungErrors.name" class="text-danger">{{ newThucungErrors.name }}</div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Loại thú cưng</label>
+                <input type="text" class="form-control" [(ngModel)]="newThucung.loaiThuCung" name="loaiThuCung" required>
+                <div *ngIf="newThucungErrors.breed" class="text-danger">{{ newThucungErrors.breed }}</div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Tuổi</label>
+                <input type="number" class="form-control" [(ngModel)]="newThucung.tuoi" name="tuoi" required>
+                <div *ngIf="newThucungErrors.age" class="text-danger">{{ newThucungErrors.age }}</div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Chủ sở hữu</label>
+                <input type="text" class="form-control" [(ngModel)]="newThucung.khachHangId" name="khachHangId" required>
+                <div *ngIf="newThucungErrors.owner" class="text-danger">{{ newThucungErrors.owner }}</div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="submit" class="btn btn-primary">Thêm</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
