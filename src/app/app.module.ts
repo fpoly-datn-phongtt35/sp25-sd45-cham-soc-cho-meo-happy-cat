@@ -24,6 +24,8 @@ import { ViewuserComponent } from './viewuser/viewuser.component';
 import { ViewusergioithieuComponent } from './viewusergioithieu/viewusergioithieu.component';
 import { ViewuserdatlichComponent } from './viewuserdatlich/viewuserdatlich.component';
 import { DatlichComponent } from './datlich/datlich.component';
+import { HoadonComponent } from './hoadon/hoadon.component';
+import {DichVuComponent} from './dichvu/dichvu.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +39,8 @@ import { DatlichComponent } from './datlich/datlich.component';
     ViewusergioithieuComponent,
     ViewuserdatlichComponent,
     DatlichComponent,
+    HoadonComponent,
+    DichVuComponent
   ],
   imports: [
     BrowserModule,

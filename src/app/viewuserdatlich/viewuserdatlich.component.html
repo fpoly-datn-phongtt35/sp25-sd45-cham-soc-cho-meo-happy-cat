@@ -93,3 +93,25 @@
     </form>
   </div>
 </div>
+<!-- Modal thông báo -->
+<div id="successModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog d-flex align-items-center justify-content-center min-vh-100">
+    <div class="modal-content shadow-lg border-0">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title fw-bold">🎉 Thông báo</h5>
+        <button type="button" class="btn-close" onclick="closeModal()"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p class="mb-2">✅ Đặt lịch thành công! Chúng tôi sẽ liên hệ với bạn trong 24h.</p>
+        <p class="fw-bold text-danger">
+          <strong id="countdown">5</strong> giây nữa sẽ tự đóng.
+        </p>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-success px-4" onclick="closeModal()">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+

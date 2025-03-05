@@ -1,0 +1,368 @@
+
+
+
+
+<div class="container mt-4">
+  <h2 class="text-center text-primary fw-bold">Danh Sách Dịch Vụ Chi Tiết</h2>
+
+  <!-- Thanh tìm kiếm & lọc -->
+  <div class="search-filter-container bg-light p-3 rounded shadow-sm mb-4">
+    <div class="row g-2">
+      <!-- Bộ lọc loại dịch vụ -->
+      <div class="col-md-3">
+        <label class="form-label">Tên loại dịch vụ</label>
+            <select  class="form-select" [(ngModel)]="selecttenLoaiDichVu"  name="tenLoaiDichVu">
+              <option value="">Tất cả</option>
+              <option *ngFor="let tenLoaiDichVu of danhSachLoaiDichVu" [value]="tenLoaiDichVu">{{ tenLoaiDichVu }}</option>
+            </select>
+        <!-- <select class="form-select border-primary" [(ngModel)]="selecttendLoaiDichVu" (change)="filterDichVu()">
+          <option *ngFor="let tenLoaiDichVu of danhSachLoaiDichVu" [value]="tenLoaiDichVu">
+            {{ tenLoaiDichVu }}
+          </option>
+        </select> -->
+      </div>
+
+      <!-- Nhập giá tối thiểu -->
+      <div class="col-md-2">
+        <label class="form-label">Giá từ</label>
+        <input type="number" class="form-control border-primary" placeholder="Giá từ"
+          [(ngModel)]="minGia" (keyup.enter)="onSearch()" min="0" />
+      </div>
+
+      <!-- Nhập giá tối đa -->
+      <div class="col-md-2">
+        <label class="form-label">Giá đến</label>
+        <input type="number" class="form-control border-primary" placeholder="Giá đến"
+          [(ngModel)]="maxGia" (keyup.enter)="onSearch()" min="0" />
+      </div>
+
+      <!-- Ô nhập từ khóa tìm kiếm -->
+      <div class="col-md-3">
+        <label class="form-label">Tên dịch vụ</label>
+        <input type="text" class="form-control border-primary" placeholder="Nhập từ khóa..."
+          [(ngModel)]="searchTerm" (keyup.enter)="onSearch()" />
+      </div>
+
+
+
+      <!-- Nút tìm kiếm -->
+      <div class="col-md-1 d-flex">
+        <button class="btn btn-primary w-100" (click)="onSearch()">
+          <i class="bi bi-search"></i> Tìm kiếm
+        </button>
+      </div>
+
+      <!-- Nút thêm mới -->
+      <div class="col-md-1 d-flex">
+        <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#addDVCT">
+          Thêm mới
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bảng dịch vụ -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Tên Dịch Vụ</th>
+          <th>Chủng loại</th>
+          <th>Hạng Cân</th>
+          <th>Giá</th>
+          <th>Nội Dung</th>
+          <th>Loại Dịch Vụ</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let chiTiet of dichVuChiTietList">
+          <td>{{ chiTiet.id }}</td>
+          <td>{{ chiTiet.tenDichVu }}</td>
+          <td>{{ chiTiet.chungLoai }}</td>
+          <td>{{ getHangCanLabel(chiTiet.hangCan) }}</td>
+          <td>{{ chiTiet.gia | number:'1.0-0' }} VND</td>
+          <td>{{ chiTiet.noiDung }}</td>
+          <td>{{ chiTiet.loaiDichVu?.tenLoaiDichVu }}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary me-1" type="button" data-bs-toggle="modal"
+              data-bs-target="#detailModal" (click)="setEditDichVu(chiTiet)">
+              <i class="fas fa-eye"></i> Xem
+            </button>
+            <button class="btn btn-sm btn-outline-warning me-1" type="button" data-bs-toggle="modal"
+              data-bs-target="#editModal" (click)="setEditDichVu(chiTiet)">
+              <i class="fas fa-edit"></i> Sửa
+            </button>
+            <button class="btn btn-sm btn-outline-danger" (click)="deleteDichVu(chiTiet.dichVuChiTietId)">
+              <i class="fas fa-trash"></i> Xóa
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Nếu danh sách rỗng -->
+  <p *ngIf="dichVuChiTietList.length === 0" class="text-center text-danger">
+    Không có dịch vụ nào.
+  </p>
+</div>
+
+
+
+<div>
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      <!-- Nút Trở lại -->
+      <li class="page-item" [class.disabled]="currentPage === 0">
+        <a class="page-link" (click)="changePage(currentPage - 1)">Trở lại</a>
+      </li>
+
+      <!-- Các số trang -->
+      <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+          [class.active]="i === currentPage">
+        <a class="page-link" (click)="changePage(i)">{{ i + 1 }}</a>
+      </li>
+
+      <!-- Nút Tiếp -->
+      <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+        <a class="page-link" (click)="changePage(currentPage + 1)">Tiếp</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<!-- Form Thêm dịch vụ-->
+<div class="modal fade" id="addDVCT" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Thêm mới</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="addDichVu()" >
+            <div class="mb-3">
+              <label for="tenDichVu" class="form-label">Tên dịch vụ</label>
+              <input  id="tenDichVu" class="form-control" [(ngModel)]="newDVCT.tenDichVu" name="tenDichVu" required>
+              <div *ngIf="newDVCTErrors.tenDichVu" class="text-danger">
+                {{ newDVCTErrors.tenDichVu }}
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="chungLoai" class="form-label">Chủng loại</label>
+              <select class="form-select" id="chungLoai" [(ngModel)]="newDVCT.chungLoai" name="chungLoai" required>
+                <option value="Chó">Chó</option>
+                <option value="Mèo">Mèo</option>
+              </select>
+              <div *ngIf="newDVCTErrors.chungLoai" class="text-danger">
+                {{ newDVCTErrors.chungLoai }}
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="hangCan" class="form-label">Hạng cân</label>
+              <select class="form-select" id="hangCan" [(ngModel)]="newDVCT.hangCan" name="hangCan" required>
+                <option value="1">0-2</option>
+                <option value="2">2-4</option>
+                <option value="3">4-7</option>
+                <option value="4">7-10</option>
+                <option value="5">Trên 10</option>
+                <option value="6">Trên 20</option>
+              </select>
+              <div *ngIf="newDVCTErrors.hangCan" class="text-danger">
+                {{ newDVCTErrors.hangCan }}
+              </div>
+            </div>
+
+
+          <div class="mb-3">
+            <label class="form-label">Giá</label>
+            <input  class="form-control" [(ngModel)]="newDVCT.gia" placeholder="Nhập giá dịch vụ" name="gia" />
+            <div *ngIf="newDVCTErrors.gia" class="text-danger">
+              {{ newDVCTErrors.gia }}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Nội Dung</label>
+            <textarea  class="form-control" [(ngModel)]="newDVCT.noiDung" rows="3" placeholder="Nhập nội dung" name="noiDung"></textarea>
+            <div *ngIf="newDVCTErrors.noiDung" class="text-danger">
+              {{ newDVCTErrors.noiDung }}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Tên loại dịch vụ</label>
+            <select  class="form-select" [(ngModel)]="newDVCT.tenLoaiDichVu"  name="tenLoaiDichVu">
+              <option *ngFor="let tenLoaiDichVu of danhSachLoaiDichVu" [value]="tenLoaiDichVu">{{ tenLoaiDichVu }}</option>
+              <div *ngIf="newDVCTErrors.tenLoaiDichVu" class="text-danger">
+                {{ newDVCTErrors.tenLoaiDichVu }}
+              </div>
+            </select>
+          </div>
+
+
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Lưu</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Form sửa dịch vụ -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Sửa dịch vụ</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="onUpdate()" novalidate>
+
+
+            <div class="mb-3">
+              <label for="tenDichVu" class="form-label">Tên dịch vụ</label>
+              <input  id="tenDichVu" class="form-control" [(ngModel)]="editDVCT.tenDichVu" name="tenDichVu" required>
+              <div *ngIf="editDVCTErrors.tenDichVu" class="text-danger">
+                {{ editDVCTErrors.tenDichVu }}
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="chungLoai" class="form-label">Chủng loại</label>
+              <select class="form-select" id="chungLoai"
+                [(ngModel)]="editDVCT.chungLoai" name="chungLoai" required>
+                <option value="chó">Chó</option>
+                <option value="mèo">Mèo</option>
+              </select>
+              <div *ngIf="editDVCTErrors.chungLoai" class="text-danger">
+                {{ editDVCTErrors.chungLoai }}
+              </div>
+            </div>
+
+              <div class="mb-3">
+                <label for="hangCan" class="form-label">Hạng cân</label>
+                <select class="form-select" id="hangCan"
+                  [(ngModel)]="editDVCT.hangCan" name="hangCan" required>
+                  <option value="1">0-2</option>
+                  <option value="2">2-4</option>
+                  <option value="3">4-7</option>
+                  <option value="4">7-10</option>
+                  <option value="5">Trên 10</option>
+                  <option value="6">Trên 20</option>
+                </select>
+                <div *ngIf="editDVCTErrors.hangCan" class="text-danger">
+                  {{ editDVCTErrors.hangCan }}
+                </div>
+              </div>
+
+          <div class="mb-3">
+            <label class="form-label">Giá</label>
+            <input  class="form-control" [(ngModel)]="editDVCT.gia" placeholder="Nhập giá dịch vụ" name="gia" />
+            <div *ngIf="editDVCTErrors.gia" class="text-danger">
+              {{ editDVCTErrors.gia }}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Nội Dung</label>
+            <textarea  class="form-control" [(ngModel)]="editDVCT.noiDung" rows="3" placeholder="Nhập nội dung" name="noiDung"></textarea>
+            <div *ngIf="editDVCTErrors.noiDung" class="text-danger">
+              {{ editDVCTErrors.noiDung }}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Tên loại dịch vụ  </label>
+            <select class="form-select" [(ngModel)]="editDVCT.tenLoaiDichVu" name="tenLoaiDichVu" required>
+              <option *ngFor="let loai of danhSachLoaiDichVu" [value]="loai">{{ loai }}</option>
+            </select>
+
+            <div *ngIf="editDVCTErrors.tenLoaiDichVu" class="text-danger">
+              {{ editDVCTErrors.tenLoaiDichVu }}
+            </div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary" aria-label="Close">Lưu thay đổi</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal xem chi tiết Dịch Vụ -->
+<div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Sửa dịch vụ</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+
+
+            <div class="mb-3">
+              <label for="tenDichVu" class="form-label">Tên dịch vụ</label>
+              <input  id="tenDichVu" class="form-control" [(ngModel)]="editDVCT.tenDichVu" name="tenDichVu" required readonly>
+            </div>
+
+            <div class="mb-3">
+              <label for="chungLoai" class="form-label">Chủng loại</label>
+              <select class="form-select" id="chungLoai"
+                [(ngModel)]="editDVCT.chungLoai" name="chungLoai" required disabled="true">
+                <option value="Chó">Chó</option>
+                <option value="Mèo">Mèo</option>
+              </select>
+            </div>
+
+              <div class="mb-3">
+                <label for="hangCan" class="form-label">Hạng cân</label>
+                <select class="form-select" id="hangCan"
+                  [(ngModel)]="editDVCT.hangCan" name="hangCan" required disabled="true">
+                  <option value="1">0-2</option>
+                  <option value="2">2-4</option>
+                  <option value="3">4-7</option>
+                  <option value="4">7-10</option>
+                  <option value="5">Trên 10</option>
+                  <option value="6">Trên 20</option>
+                </select>
+              </div>
+
+          <div class="mb-3">
+            <label class="form-label">Giá</label>
+            <input  class="form-control" [(ngModel)]="editDVCT.gia"  name="gia" required readonly/>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Nội Dung</label>
+            <textarea  class="form-control" [(ngModel)]="editDVCT.noiDung" rows="3"  name="noiDung" required readonly></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Tên loại dịch vụ  </label>
+            <select class="form-select" [(ngModel)]="editDVCT.tenLoaiDichVu" name="tenLoaiDichVu" required disabled="true">
+              <option *ngFor="let loai of danhSachLoaiDichVu" [value]="loai">{{ loai }}</option>
+            </select>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-warning" data-bs-dismiss="modal" >Đóng</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

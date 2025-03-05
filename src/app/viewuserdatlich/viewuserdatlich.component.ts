@@ -65,7 +65,7 @@ export class ViewuserdatlichComponent implements OnInit {
       },
       (error) => {
 
-        alert('Đặt lịch thành công!');
+        this.showSuccessModal();
         this.resetForm();
       this.tien=0     }
     );
@@ -89,6 +89,35 @@ export class ViewuserdatlichComponent implements OnInit {
 
         }
       );
+    }
+  }
+  showSuccessModal(): void {
+    const modalElement = document.getElementById('successModal');
+    if (modalElement) {
+      modalElement.classList.add('show'); // Hiển thị modal
+      modalElement.style.display = 'block';
+
+      let countdown = 5;
+      const countdownElement = document.getElementById('countdown');
+
+      const interval = setInterval(() => {
+        countdown--;
+        if (countdownElement) {
+          countdownElement.textContent = countdown.toString();
+        }
+
+        if (countdown === 0) {
+          this.closeModal();
+          clearInterval(interval);
+        }
+      }, 1000);
+    }
+  }
+  closeModal(): void {
+    const modalElement = document.getElementById('successModal');
+    if (modalElement) {
+      modalElement.classList.remove('show'); // Ẩn modal
+      modalElement.style.display = 'none';
     }
   }
 
