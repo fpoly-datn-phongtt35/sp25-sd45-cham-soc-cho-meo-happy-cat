@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-
 @Component({
   selector: 'app-datlich',
   templateUrl: './datlich.component.html',
@@ -9,108 +8,248 @@ import { HttpClient } from '@angular/common/http';
 })
 export class DatlichComponent implements OnInit {
   apiUrl = 'http://localhost:8080/api/lich-dat';
-
-  datlichlist: any[] = [];
-  currentPage = 0;
-  totalPages = 0;
-  pageSize = 5;
-  searchTerm: string = '';
-  searchTerm1: string = '';
-  searchTerm2: string = '';
-
-  selectedLich: any = null;
-  listlichdatchuaxacnhan: any[] = [];
-  listlichhuy: any[] = [];
-
-  currentPage1 = 0;
-  totalPages1 = 0;
-
-  currentPage2 = 0;
-  totalPages2 = 0;
-  danhSachDichVu: String[] = [];
+  apiUrl2 = 'http://localhost:8080/api/phan-cong';
   alertMessage: string | null = null;
   alertType: string = 'success';
-  isAlertVisible = false; // Biến theo dõi trạng thái thông báo
-  selectedDate: string = '';
-  selectedDate1: string = '';
-  selectedDate2: string = '';
+  isAlertVisible = false;
 
+  danhSachLichDat: any[] = [];
+  ngay: string = new Date().toISOString().split('T')[0]; // Ngày được chọn
+  danhSachCaLam: any[] = []; // Danh sách ca làm
+  danhSachNhanVien: any[] = []; // Danh sách nhân viên
+  phanCongMatrix: any[] = []; // Ma trận phân công
 
-  danhSachGio: string[] = [
-    '08:30', '09:30', '10:30','11:30',
-    '13:30', '14:30', '15:30', '16:30', '17:30',
-    '18:30', '19:30', '20:30'
-  ];
+  selectedDate1: string = new Date().toISOString().split('T')[0];
+  searchTerm1: string = '';
+  currentPage1 = 0;
+  totalPages1 = 0;
+  listlichdatdaxacnhan: any[] = [];
+  selectedLich: any = null;
 
-  editlichDat = {
-    lichDatId:null,
-    tenKhachHang: '',
-    soDienThoai: '',
-    email: '',
-    tenThuCung: '',
-    chungLoai: 'chó',
-    hangCan: null,
-    ngayDat: '',
-    gioDat: '',
-    tenDichVu: '',
-    xoaLich: null
-  };
+  selectedDate2: string = new Date().toISOString().split('T')[0];
+  searchTerm2 :string = '';
+  currentPage2 = 0;
+  totalPages2 = 0;
 
   constructor(private http: HttpClient) { }
 
   ngOnInit() {
-    this.loadlichdatxacnhan();
-    this.loadlichdatchuaxacnhan();
-    this.loadlichdathuy();
-    this.layDanhSachDichVu();
-
-
+    this.taiLaiDuLieu();
+    this.taiLaiDuLieuChuaPhanCong();
+    this.taiDanhSachNhanVien();
+    this.taiDanhSachCaLam();
+    this.loadlichdatdaxacnhan();
+  }
+  toggleCaLam(lich: any, caLamId: number) {
+    if (!lich.selectedCaLamIds) {
+      lich.selectedCaLamIds = [];
+    }
+    if (lich.selectedCaLamIds.includes(caLamId)) {
+      lich.selectedCaLamIds = lich.selectedCaLamIds.filter(id => id !== caLamId);
+    } else {
+      lich.selectedCaLamIds.push(caLamId);
+    }
   }
 
-  layDanhSachDichVu(): void {
-    this.http.get<any[]>('http://localhost:8080/api/lich-dat/danh-sach-ten-dich-vu').subscribe(
-      (data) => {
-        this.danhSachDichVu = data;
+
+  taiLaiDuLieu() {
+    if (!this.ngay) {
+      this.showAlert('Vui lòng chọn ngày', 'danger');
+      return;
+    }
+
+    this.http.get(`${this.apiUrl2}/lich-lam-viec?ngay=${this.ngay}`).subscribe(
+      (data: any) => {
+        this.danhSachCaLam = data.ca_lam || [];
+        this.danhSachNhanVien = data.nhan_vien || [];
+        this.phanCongMatrix = data.phan_cong || {};
+
+        console.log('phancong',this.phanCongMatrix)
 
       },
       (error) => {
-        console.error('Lỗi khi lấy danh sách dịch vụ:', error);
+        console.error('Lỗi khi tải lịch làm việc:', error);
+        this.showAlert('Lỗi khi tải lịch làm việc', 'danger');
       }
     );
   }
 
-  loadlichdatxacnhan() {
-    let url = `${this.apiUrl}/list?page=${this.currentPage}&size=${this.pageSize}`;
+  daPhanCong(caLamId: number, nhanVienId: number): boolean {
+    if (!this.phanCongMatrix || !this.phanCongMatrix[caLamId]) return false;
 
-    if (this.searchTerm.trim()) {
-      url += `&search=${this.searchTerm}`;
+    return !!this.phanCongMatrix[caLamId][nhanVienId];
+  }
+
+  taiLaiDuLieuChuaPhanCong() {
+    let url = `${this.apiUrl}/chua-phan-cong?page=${this.currentPage2}`;
+
+    if (this.selectedDate1) { // Chỉ thêm nếu người dùng chọn ngày
+        url += `&ngayDat=${this.selectedDate2}`;
     }
-    if (this.selectedDate) { // Chỉ thêm nếu người dùng chọn ngày
-      url += `&ngayDat=${this.selectedDate}`;
-  }
-    this.http.get<any>(url)
-      .subscribe(response => {
-        this.datlichlist = response.content;
-        this.totalPages = response.totalPages;
+    if (this.searchTerm2.trim()) { // Tìm theo số điện thoại
+        url += `&soDienThoai=${this.searchTerm2}`;
+    }
 
-        if (this.datlichlist.length === 0 && this.currentPage > 0) {
-          this.currentPage = 0;
-          this.loadlichdatxacnhan();
+    this.http.get<any>(url).subscribe(
+      (response) => {
+        this.danhSachLichDat = response.content.map((lich: any) => ({
+          ...lich,
+          selectedNhanVienId: this.danhSachNhanVien.length ? this.danhSachNhanVien[0].id : null,
+          selectedCaLamId: this.danhSachCaLam.length ? this.danhSachCaLam[0].caLamId : null,
+        }));
+
+        this.totalPages2 = response.totalPages;
+
+        if (this.danhSachLichDat.length === 0 && this.currentPage2 > 0) {
+          this.currentPage2 = 0;
+          this.taiLaiDuLieuChuaPhanCong();
         }
-      });
+      },
+      (error) => {
+        console.error('Lỗi khi tải lịch đặt chưa phân công:', error);
+        this.showAlert('Lỗi khi tải lịch đặt chưa phân công', 'danger');
+      }
+    );
+}
+
+
+  taiDanhSachNhanVien() {
+    this.http.get(`${this.apiUrl}/nhan-vien`).subscribe(
+      (data: any) => {
+        this.danhSachNhanVien = data;
+
+      },
+      (error) => {
+        console.error('Lỗi khi tải danh sách nhân viên:', error);
+        this.showAlert('Lỗi khi tải danh sách nhân viên', 'danger');
+      }
+    );
   }
 
+  taiDanhSachCaLam() {
+    this.http.get(`${this.apiUrl}/ca-lam`).subscribe(
+      (data: any) => {
+        this.danhSachCaLam = data;
+      },
+      (error) => {
+        console.error('Lỗi khi tải danh sách ca làm:', error);
+        this.showAlert('Lỗi khi tải danh sách ca làm', 'danger');
+      }
+    );
+  }
+
+  xacNhan(lich: any) {
+    if (this.danhSachNhanVien.length === 0 || this.danhSachCaLam.length === 0) {
+      this.showAlert('Danh sách nhân viên hoặc ca làm trống. Vui lòng kiểm tra lại!', 'danger');
+    }
+
+
+    const request = {
+      lichDatId: lich.lichDatId,
+      nhanVienId: Number(lich.selectedNhanVienId),
+      caLamIds: lich.selectedCaLamIds, // Mảng ID ca làm đã chọn
+      ngayDat: lich.ngayDat,
+    };
+
+    this.http.post(`${this.apiUrl}/xac-nhan`, request,{ responseType: 'text' }).subscribe(
+      (response: any) => {
+        this.showAlert(response, 'success');
+        this.taiLaiDuLieu();
+        this.taiLaiDuLieuChuaPhanCong();
+        this.loadlichdatdaxacnhan();
+      },
+      (error) => {
+        console.error('Lỗi khi xác nhận lịch đặt:', error);
+        this.taiLaiDuLieu();
+        this.taiLaiDuLieuChuaPhanCong();
+        let errorMessage = 'Lỗi không xác định';
+        if (error.error) {
+          if (typeof error.error === 'string') {
+            errorMessage = error.error;
+          } else if (typeof error.error === 'object' && error.error.message) {
+            errorMessage = error.error.message;
+          }
+        }
+
+        this.showAlert(errorMessage, 'danger');
+      }
+    );
+  }
+
+
+  closeAlert() {
+    this.alertMessage = null;
+    this.isAlertVisible = false;
+  }
+
+
+
+  showAlert(message: string, type: string) {
+    if (this.isAlertVisible) return;
+
+    this.alertMessage = message;
+    this.alertType = type;
+    this.isAlertVisible = true;
+
+    setTimeout(() => {
+      this.alertMessage = null;
+      this.isAlertVisible = false;
+    }, 3000); // Thời gian hiển thị thông báo: 3 giây
+  }
+
+
+  closeEditModal() {
+    const modal = document.getElementById('edit-dat-lich');
+
+    if (modal) {
+      (modal as any).classList.remove('show');
+      (modal as any).setAttribute('aria-hidden', 'true');
+      (modal as any).setAttribute('style', 'display: none;');
+
+      document.body.classList.remove('modal-open');
+      const backdrop = document.querySelector('.modal-backdrop');
+      if (backdrop) {
+        backdrop.remove();
+      }
+    }
+  }
   filterByDate() {
-    this.currentPage = 0;
+
     this.currentPage2 = 0;
+    this.currentPage1 = 0;
+    this.loadlichdatdaxacnhan();
+    this.taiLaiDuLieuChuaPhanCong();
+
+  }
+  changePage1(page: number) {
+    if (page >= 0 && page < this.totalPages1) {
+      this.currentPage1 = page;
+      this.loadlichdatdaxacnhan();
+    }
+  }
+  changePage2(page: number) {
+    if (page >= 0 && page < this.totalPages2) {
+      this.currentPage2 = page;
+      this.taiLaiDuLieuChuaPhanCong();
+    }
+  }
+  onSearch() {
 
     this.currentPage1 = 0;
-    this.loadlichdatxacnhan();
-    this.loadlichdatchuaxacnhan();
-    this.loadlichdathuy();
+    this.loadlichdatdaxacnhan();
+
+
   }
-  loadlichdatchuaxacnhan() {
-    let url = `${this.apiUrl}/list?page=${this.currentPage1}&size=${this.pageSize}&xoaLich=1`;
+  onSearch2() {
+
+    this.currentPage2=0;
+    this.taiLaiDuLieuChuaPhanCong();
+
+
+  }
+
+  loadlichdatdaxacnhan() {
+    let url = `${this.apiUrl}/list?page=${this.currentPage1}`;
 
     if (this.selectedDate1) { // Chỉ thêm nếu người dùng chọn ngày
       url += `&ngayDat=${this.selectedDate1}`;
@@ -120,69 +259,19 @@ export class DatlichComponent implements OnInit {
     }
     this.http.get<any>(url)
       .subscribe(response => {
-        this.listlichdatchuaxacnhan = response.content;
+        this.listlichdatdaxacnhan = response.content;
+        console.log('đaa',response.content)
 
         this.totalPages1 = response.totalPages;
 
-        if (this.listlichdatchuaxacnhan.length === 0 && this.currentPage1 > 0) {
+        if (this.listlichdatdaxacnhan.length === 0 && this.currentPage1 > 0) {
           this.currentPage1 = 0;
-          this.loadlichdatchuaxacnhan();
-        }
-      });
-  }
-  loadlichdathuy() {
-    let url = `${this.apiUrl}/list?page=${this.currentPage2}&size=${this.pageSize}&xoaLich=2`;
-    if (this.selectedDate2) { // Chỉ thêm nếu người dùng chọn ngày
-      url += `&ngayDat=${this.selectedDate2}`;
-  }
-    if (this.searchTerm2.trim()) {
-      url += `&search=${this.searchTerm2}`;
-    }
-    this.http.get<any>(url)
-      .subscribe(response => {
-        this.listlichhuy = response.content;
-        this.totalPages2 = response.totalPages;
-
-        if (this.listlichhuy.length === 0 && this.currentPage2 > 0) {
-          this.currentPage2 = 0;
-          this.loadlichdathuy();
+          this.loadlichdatdaxacnhan();
         }
       });
   }
 
 
-  changePage(page: number) {
-    if (page >= 0 && page < this.totalPages) {
-      this.currentPage = page;
-     this.loadlichdatxacnhan();
-
-
-    }
-  }
-  changePage1(page: number) {
-    if (page >= 0 && page < this.totalPages1) {
-      this.currentPage1 = page;
-      this.loadlichdatchuaxacnhan();
-    }
-  }
-
-  changePage2(page: number) {
-    if (page >= 0 && page < this.totalPages2) {
-      this.currentPage2 = page;
-      this.loadlichdathuy();
-    }
-  }
-
-  onSearch() {
-    this.currentPage = 0;
-    this.currentPage2 = 0;
-
-    this.currentPage1 = 0;
-
-    this.loadlichdatxacnhan();
-    this.loadlichdatchuaxacnhan();
-    this.loadlichdathuy();
-  }
   viewDetails(lich: any): void {
     this.selectedLich = lich; // Gán lịch đặt được chọn
     console.log('datav',this.selectedLich)
@@ -202,98 +291,4 @@ export class DatlichComponent implements OnInit {
     return hangCan ? hangCanMap[hangCan] || 'Không xác định' : 'Không xác định';
   }
 
-  setEditLichDat(lich: any) {
-    this.editlichDat = { ...lich }; // Gán dữ liệu khách hàng vào form sửa
-    console.log('datasetdatlich',this.editlichDat.lichDatId)
-  }
-  onUpdate() {
-    // Reset lỗi
-
-    const updateLichDat = {
-      tenKhachHang:this.editlichDat.tenKhachHang,
-      soDienThoai: this.editlichDat.soDienThoai,
-      email: this.editlichDat.email,
-      tenThuCung: this.editlichDat.tenThuCung,
-      chungLoai: this.editlichDat.chungLoai,
-      hangCan: this.editlichDat.hangCan,
-      ngayDat:this.editlichDat.ngayDat,
-      gioDat: this.editlichDat.gioDat,
-      tenDichVu: this.editlichDat.tenDichVu,
-      xoaLich: this.editlichDat.xoaLich,
-    };
-
-    this.http.put<any>(`${this.apiUrl}/sua/${this.editlichDat.lichDatId}`, updateLichDat)
-      .subscribe(
-        response => {
-
-
-        },
-        error => {
-          this.loadlichdatxacnhan();
-          this.loadlichdatchuaxacnhan();
-          this.loadlichdathuy();
-          this.closeEditModal();
-          this.showAlert('Cập nhật  thành công!', 'success');
-
-          console.log('update id',this.editlichDat.lichDatId)
-        }
-      );
-  }
-
-  showAlert(message: string, type: string) {
-    if (this.isAlertVisible) return;  // Nếu thông báo đang hiển thị, không làm gì thêm
-
-    this.alertMessage = message;
-    this.alertType = type;
-    this.isAlertVisible = true;  // Đánh dấu thông báo là đang hiển thị
-
-    // Tự động ẩn thông báo sau 1.5 giây
-    setTimeout(() => {
-      this.alertMessage = null;
-      this.isAlertVisible = false;  // Đánh dấu thông báo đã ẩn
-    }, 1500);
-  }
-  closeEditModal() {
-    const modal = document.getElementById('edit-dat-lich');
-
-    if (modal) {
-      (modal as any).classList.remove('show');
-      (modal as any).setAttribute('aria-hidden', 'true');
-      (modal as any).setAttribute('style', 'display: none;');
-
-      document.body.classList.remove('modal-open');
-      const backdrop = document.querySelector('.modal-backdrop');
-      if (backdrop) {
-        backdrop.remove();
-      }
-    }
-  }
-
-  huyLich(lichDatId: number, xoaLich: number) {
-    if (confirm('Xác nhận hủy lịch này ?')) {
-
-    this.http.put(`${this.apiUrl}/cap-nhat-xoa-lich/${lichDatId}?xoaLich=${xoaLich}`, { responseType: 'text' })
-      .subscribe({
-        next: (response) => {
-          this.showAlert('Hủy thành công!', 'success');
-          console.log(response);
-        },
-        error: (err) => {
-          this.showAlert('Hủy thành công!', 'success');
-        }
-      });}}
-
-      xacNhanLich(lichDatId: number, xoaLich: number) {
-
-        this.http.put(`${this.apiUrl}/cap-nhat-xoa-lich/${lichDatId}?xoaLich=${xoaLich}`, { responseType: 'text' })
-          .subscribe({
-            next: (response) => {
-              this.showAlert('Xác nhận thành công!', 'success');
-
-              console.log(response);
-            },
-            error: (err) => {
-              this.showAlert('Hủy thành công!', 'success');
-            }
-          });}
 }

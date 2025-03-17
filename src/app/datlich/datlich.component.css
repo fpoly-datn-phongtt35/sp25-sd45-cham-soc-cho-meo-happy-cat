@@ -101,3 +101,21 @@
   margin-bottom: 15px;
 }
 
+.da-phan-cong {
+  background-color: green;
+  color: white;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+.da-phan-cong {
+  background-color: #d4edda; /* Màu nền cho ô đã phân công */
+  color: #155724; /* Màu chữ cho ô đã phân công */
+  font-weight: bold;
+}
